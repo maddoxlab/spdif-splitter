@@ -1,19 +1,3 @@
-// https://forum.pjrc.com/threads/66909-Realtime-S-PDIF-decoding-on-Teensy-4-0?p=276632#post276632
-// See page 2036 and neighboring in https://www.pjrc.com/teensy/IMXRT1060RM_rev2.pdf
-
-// other relevant projects
-// https://forum.pjrc.com/threads/61142-USB-Audio-Frame-Sync-on-Teensy-4-0
-// https://forum.pjrc.com/threads/58881-Teensy-4-0-Toslink-optical-output
-
-// relevant registers:
-// 4038_0000 SPDIF Configuration Register (SPDIF_SCR) 32 R/W 0000_0400h 40.6.1/2037
-// 4038_000C InterruptEn Register (SPDIF_SIE) 32 R/W 0000_0000h 40.6.4/2041
-// 4038_0010 InterruptStat Register (SPDIF_SIS) 32 R 0000_0002h 40.6.5/2043
-// 4038_0010 InterruptClear Register (SPDIF_SIC) 32 W 0000_0000h 40.6.6/2045
-// 4038_0014 SPDIFRxLeft Register (SPDIF_SRL) 32 R 0000_0000h 40.6.7/2046
-// 4038_0018 SPDIFRxRight Register (SPDIF_SRR) 32 R 0000_0000h 40.6.8/2047
-// see line 8392 here: https://github.com/PaulStoffregen/cores/blob/master/teensy4/imxrt.h
-
 #include <SPI.h>
 
 #if defined(__IMXRT1062__)
@@ -84,98 +68,80 @@ void setup() {
 }
 
 byte pwm_thresh = 0;
+const byte ZERO_BYTE = 0;
 unsigned int pwm_max = 256;
 float f0 = 0.25;
 float pi = 3.141592654;
 const int n_leds = 4;
 float x[n_leds];
 void loop() {
-  /*
-  float t = millis() / 1000.0;
-  byte led_lit = 0;
-  for(int ii = 0; ii < n_leds; ii++) {
-    x[ii] = round(pwm_max * pow(0.5 * (cos(2 * pi * f0 * t * (ii + 1)) + 1), 2));
-    led_lit |= (x[ii] > pwm_thresh) << ii;
-  }
-  pwm_thresh++;
-
-  long unsigned int t0;
-  t0 = micros();
-  SPI.beginTransaction(SPISettings(10000000, MSBFIRST, SPI_MODE0));
-  digitalWriteFast(LATCH_PIN, LOW);
-  SPI.transfer(led_lit);
-  digitalWriteFast(LATCH_PIN, HIGH);
-  SPI.endTransaction();
-  t0 = micros() - t0;
-
-  if(int(t) % 2 == 0) {
-    digitalWriteFast(LED_POW_PIN, HIGH);
-  } else {
-    digitalWriteFast(LED_POW_PIN, LOW);
-  }
-
-  */
-
+  // get the audio data from the FIFO buffers
   fifo_left[0] = SPDIF_SRL >> 0;
   fifo_left[1] = SPDIF_SRL >> 8;
   fifo_left[2] = SPDIF_SRL >> 16;
   fifo_right[0] = SPDIF_SRR >> 0;
   fifo_right[1] = SPDIF_SRR >> 8;
   fifo_right[2] = SPDIF_SRR >> 16;
-
+  
+  // check to see if the audio data has changed since last loop
   bool fifo_left_change = (fifo_left[0] != fifo_left_last[0]) || (fifo_left[1] != fifo_left_last[1]) || (fifo_left[2] != fifo_left_last[2]);
   bool fifo_right_change = (fifo_right[0] != fifo_right_last[0]) || (fifo_right[1] != fifo_right_last[1]) || (fifo_right[2] != fifo_right_last[2]);
  
-  if (((SPDIF_SRPC & SPDIF_SRPC_LOCK) == SPDIF_SRPC_LOCK) && (fifo_left_change || fifo_right_change)) {
-  //if (((SPDIF_SRPC & SPDIF_SRPC_LOCK) == SPDIF_SRPC_LOCK)) {
-   
-   
+  if (SPDIF_SRPC & SPDIF_SRPC_LOCK) == SPDIF_SRPC_LOCK) { // is SPDIF connected?
+    if (fifo_left_change || fifo_right_change) { // update the trigger status if there has been a change
+      SPI.beginTransaction(SPISettings(100000000, MSBFIRST, SPI_MODE0));
+      digitalWriteFast(LATCH_PIN, LOW);
+
+      SPI.transfer(fifo_right[2]);
+      SPI.transfer(fifo_right[1]);
+      SPI.transfer(fifo_right[0]);
+      SPI.transfer(fifo_left[2]);
+      SPI.transfer(fifo_left[1]);
+      SPI.transfer(fifo_left[0]);
+
+      digitalWriteFast(LATCH_PIN, HIGH);
+      SPI.endTransaction();
+
+      fifo_left_last[0] = fifo_left[0];
+      fifo_left_last[1] = fifo_left[1];
+      fifo_left_last[2] = fifo_left[2];
+      fifo_right_last[0] = fifo_right[0];
+      fifo_right_last[1] = fifo_right[1];
+      fifo_right_last[2] = fifo_right[2];
+    }
+  } else { // zero everything out if SPDIF is not connected
     SPI.beginTransaction(SPISettings(100000000, MSBFIRST, SPI_MODE0));
     digitalWriteFast(LATCH_PIN, LOW);
-   
-    SPI.transfer(fifo_right[2]);
-    SPI.transfer(fifo_right[1]);
-    SPI.transfer(fifo_right[0]);
-    SPI.transfer(fifo_left[2]);
-    SPI.transfer(fifo_left[1]);
-    SPI.transfer(fifo_left[0]);
-   
+    
+    SPI.transfer(ZERO_BYTE);
+    SPI.transfer(ZERO_BYTE);
+    SPI.transfer(ZERO_BYTE);
+    SPI.transfer(ZERO_BYTE);
+    SPI.transfer(ZERO_BYTE);
+    SPI.transfer(ZERO_BYTE);
+
     digitalWriteFast(LATCH_PIN, HIGH);
     SPI.endTransaction();
 
-    fifo_left_last[0] = fifo_left[0];
-    fifo_left_last[1] = fifo_left[1];
-    fifo_left_last[2] = fifo_left[2];
-    fifo_right_last[0] = fifo_right[0];
-    fifo_right_last[1] = fifo_right[1];
-    fifo_right_last[2] = fifo_right[2];
+    fifo_left_last[0] = fifo_left_last[1] = fifo_left_last[2] = 0;
+    fifo_right_last[0] = fifo_right_last[1] = fifo_right_last[2] = 0;
   }
  
   digitalWriteFast(LED_SPDIF_PIN, (SPDIF_SRPC & SPDIF_SRPC_LOCK) == SPDIF_SRPC_LOCK);
 }
 
+// https://forum.pjrc.com/threads/66909-Realtime-S-PDIF-decoding-on-Teensy-4-0?p=276632#post276632
+// See page 2036 and neighboring in https://www.pjrc.com/teensy/IMXRT1060RM_rev2.pdf
 
-/*void fifo_isr() {
-  fifo_left[0] = SPDIF_SRL >> 0;
-  fifo_left[1] = SPDIF_SRL >> 8;
-  fifo_left[2] = SPDIF_SRL >> 16;
-  fifo_right[0] = SPDIF_SRR >> 0;
-  fifo_right[1] = SPDIF_SRR >> 8;
-  fifo_right[2] = SPDIF_SRR >> 16;
- 
-  SPI.beginTransaction(SPISettings(100000000, MSBFIRST, SPI_MODE0));
-  digitalWriteFast(LATCH_PIN, LOW);
- 
-  SPI.transfer(fifo_right[2]);
-  SPI.transfer(fifo_right[1]);
-  SPI.transfer(fifo_right[0]);
-  SPI.transfer(fifo_left[2]);
-  SPI.transfer(fifo_left[1]);
-  SPI.transfer(fifo_left[0]);
- 
-  digitalWriteFast(LATCH_PIN, HIGH);
-  SPI.endTransaction();
+// other relevant projects
+// https://forum.pjrc.com/threads/61142-USB-Audio-Frame-Sync-on-Teensy-4-0
+// https://forum.pjrc.com/threads/58881-Teensy-4-0-Toslink-optical-output
 
-  digitalWriteFast(LED_POW_PIN, LOW);
-};
-*/
+// relevant registers:
+// 4038_0000 SPDIF Configuration Register (SPDIF_SCR) 32 R/W 0000_0400h 40.6.1/2037
+// 4038_000C InterruptEn Register (SPDIF_SIE) 32 R/W 0000_0000h 40.6.4/2041
+// 4038_0010 InterruptStat Register (SPDIF_SIS) 32 R 0000_0002h 40.6.5/2043
+// 4038_0010 InterruptClear Register (SPDIF_SIC) 32 W 0000_0000h 40.6.6/2045
+// 4038_0014 SPDIFRxLeft Register (SPDIF_SRL) 32 R 0000_0000h 40.6.7/2046
+// 4038_0018 SPDIFRxRight Register (SPDIF_SRR) 32 R 0000_0000h 40.6.8/2047
+// see line 8392 here: https://github.com/PaulStoffregen/cores/blob/master/teensy4/imxrt.h
