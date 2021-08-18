@@ -910,42 +910,44 @@ U 1 1 61594C32
 P 9100 1300
 F 0 "H1" H 9200 1346 50  0000 L CNN
 F 1 "MountingHole" H 9200 1255 50  0000 L CNN
-F 2 "MountingHole:MountingHole_4.3mm_M4" H 9100 1300 50  0001 C CNN
+F 2 "MountingHole:MountingHole_3.2mm_M3" H 9100 1300 50  0001 C CNN
 F 3 "~" H 9100 1300 50  0001 C CNN
 	1    9100 1300
 	1    0    0    -1  
 $EndComp
 $Comp
 L Mechanical:MountingHole H2
-U 1 1 615A1A07
+U 1 1 615C6999
 P 9100 1500
 F 0 "H2" H 9200 1546 50  0000 L CNN
 F 1 "MountingHole" H 9200 1455 50  0000 L CNN
-F 2 "MountingHole:MountingHole_4.3mm_M4" H 9100 1500 50  0001 C CNN
+F 2 "MountingHole:MountingHole_3.2mm_M3" H 9100 1500 50  0001 C CNN
 F 3 "~" H 9100 1500 50  0001 C CNN
 	1    9100 1500
 	1    0    0    -1  
 $EndComp
 $Comp
 L Mechanical:MountingHole H3
-U 1 1 615A1D05
+U 1 1 615C6C1B
 P 9100 1700
 F 0 "H3" H 9200 1746 50  0000 L CNN
 F 1 "MountingHole" H 9200 1655 50  0000 L CNN
-F 2 "MountingHole:MountingHole_4.3mm_M4" H 9100 1700 50  0001 C CNN
+F 2 "MountingHole:MountingHole_3.2mm_M3" H 9100 1700 50  0001 C CNN
 F 3 "~" H 9100 1700 50  0001 C CNN
 	1    9100 1700
 	1    0    0    -1  
 $EndComp
 $Comp
 L Mechanical:MountingHole H4
-U 1 1 615A1F5C
+U 1 1 615C6ECB
 P 9100 1900
 F 0 "H4" H 9200 1946 50  0000 L CNN
 F 1 "MountingHole" H 9200 1855 50  0000 L CNN
-F 2 "MountingHole:MountingHole_4.3mm_M4" H 9100 1900 50  0001 C CNN
+F 2 "MountingHole:MountingHole_3.2mm_M3" H 9100 1900 50  0001 C CNN
 F 3 "~" H 9100 1900 50  0001 C CNN
 	1    9100 1900
 	1    0    0    -1  
 $EndComp
+Text Notes 7050 750  0    50   ~ 0
+Configuration boot switch
 $EndSCHEMATC
