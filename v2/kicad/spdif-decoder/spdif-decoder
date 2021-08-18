@@ -1,0 +1,32 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>KiCad BOM Example 5</title>
+    </head>
+    <body>
+    <h1>/home/rkmaddox/Dropbox/ads1299/spdif-decoder/spdif-decoder.sch</h1>
+    <p>Sun 18 Apr 2021 03:24:55 PM EDT</p>
+    <p>Eeschema 5.1.9-73d0e3b20d~88~ubuntu18.04.1</p>
+    <p><b>Component Count:</b>28</p>
+    <table>
+    <tr><th style='width:640px'>Ref</th><th>Qnty</th><th>Value</th><th>Part</th><th>Footprint</th><th>Description</th><th>Vendor</th></tr>
+    <tr><td>C1, C2, C3, C4</td><td>4</td><td>0.1u</td><td>Device:C</td><td>Capacitor_THT:C_Disc_D3.0mm_W2.0mm_P2.50mm</td><td>Unpolarized capacitor</td><td></td></tr>
+    <tr><td>D1, D2, D3, D4, D5, D6</td><td>6</td><td>LED</td><td>Device:LED</td><td>LED_THT:LED_D3.0mm</td><td>Light emitting diode</td><td></td></tr>
+    <tr><td>J1</td><td>1</td><td>DB25_Female</td><td>Connector:DB25_Female</td><td>Connector_Dsub:DSUB-25_Female_Horizontal_P2.77x2.84mm_EdgePinOffset9.40mm</td><td>25-pin female D-SUB connector</td><td></td></tr>
+    <tr><td>J2</td><td>1</td><td>TBL009V-254-24GY-2GY</td><td>_Mouser:TBL009V-254-24GY-2GY</td><td>SamacSys_Parts:TBL009V25424GY2GY</td><td>Fixed Terminal Blocks Terminal block, screwless, 2.54, Vertical, 24, Gray w Gray Button</td><td></td></tr>
+    <tr><td>J3</td><td>1</td><td>TBL009V-254-02GY-2GY</td><td>_Mouser:TBL009V-254-02GY-2GY</td><td>SamacSys_Parts:TBL009V25402GY2GY</td><td>Fixed Terminal Blocks</td><td></td></tr>
+    <tr><td>J5</td><td>1</td><td>TBL009V-254-16GY-2GY</td><td>_Mouser:TBL009V-254-16GY-2GY</td><td>SamacSys_Parts:TBL009V25416GY2GY</td><td>Fixed Terminal Blocks Terminal block, screwless, 2.54, Vertical, 16, Gray w Gray Button</td><td></td></tr>
+    <tr><td>J6</td><td>1</td><td>TBL009V-254-10GY-2GY</td><td>_Mouser:TBL009V-254-10GY-2GY</td><td>SamacSys_Parts:TBL009V25410GY2GY</td><td>Fixed Terminal Blocks Terminal block, screwless, 2.54, Vertical, 10, Gray w Gray Button</td><td></td></tr>
+    <tr><td>J8</td><td>1</td><td>TORX1950A_F_</td><td>_Mouser:TORX1950A_F_</td><td>SamacSys_Parts:TORX1950AF</td><td>Optical Receiver 10Mbps Single 50m 6-Pin )</td><td></td></tr>
+    <tr><td>L1</td><td>1</td><td>47u</td><td>Device:L</td><td>Inductor_THT:L_Axial_L5.3mm_D2.2mm_P2.54mm_Vertical_Vishay_IM-1</td><td>Inductor</td><td></td></tr>
+    <tr><td>R1, R2, R3, R4, R5, R6</td><td>6</td><td>560</td><td>Device:R</td><td>Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal</td><td>Resistor</td><td></td></tr>
+    <tr><td>R7</td><td>1</td><td>22</td><td>Device:R</td><td>Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal</td><td>Resistor</td><td></td></tr>
+    <tr><td>U1</td><td>1</td><td>Teensy4.0</td><td>teensy:Teensy4.0</td><td>teensy:Teensy40</td><td></td><td></td></tr>
+    <tr><td>U2, U3, U4</td><td>3</td><td>74AHCT595</td><td>74xx:74AHCT595</td><td>digikey-footprints:DIP-16_W7.62mm</td><td>8-bit serial in/out Shift Register 3-State Outputs</td><td></td></tr><!--TABLEROW-->
+    </table>
+    </body>
+</html>
+    
