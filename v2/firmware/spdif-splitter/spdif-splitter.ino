@@ -16,7 +16,6 @@ extern "C" uint32_t set_arm_clock(uint32_t frequency);
 #define SPI_CLK_PIN 13
 #define LED_POW_PIN 16
 #define LED_SPDIF_PIN 17
-#define SPDIF_FIFO SPDIF_SRL // eventually allow the channel to be chosen
 
 // adresses in which the pinout bytes are stored -- 4 bytes needed for 25 pins
 // each bit of pinout corresponds to a pin and the value stored says which bit to write
@@ -33,11 +32,6 @@ volatile uint32_t *spdif_fifo; // read from left or right SPDIF channel
 volatile uint32_t spdif_fifo_current = 0;
 volatile uint32_t spdif_fifo_prior = 0;
 volatile uint32_t out_bits = 0;
-
-byte fifo_left[3];
-byte fifo_right[3];
-byte fifo_left_last[3];
-byte fifo_right_last[3];
 
 void config();
 
@@ -92,12 +86,6 @@ void setup() {
       pinout_ground_mask |= 1 << i;
     }
   }
-  if (EEPROM.read(ADDR_CHANNEL)) {
-    spdif_fifo = &SPDIF_SRR;
-  } else {
-    spdif_fifo = &SPDIF_SRL;
-  }
-  // *spdif_fifo + 5;
 
   Serial.println("Your pinout is (255 means ground):");
   char str_pinout[20];
@@ -116,29 +104,43 @@ void setup() {
   }
 }
 
-byte pwm_thresh = 0;
+byte channel = EEPROM.read(ADDR_CHANNEL);
+uint32_t get_fifo() {
+  uint32_t fifo_read, fifo_ignore;
+  if (channel) {
+    fifo_ignore = SPDIF_SRL;
+    fifo_read = SPDIF_SRR;
+  } else {
+    fifo_read = SPDIF_SRL;
+    fifo_ignore = SPDIF_SRR;
+  }
+  return fifo_read;
+}
+
 const byte ZERO_BYTE = 0;
-unsigned int pwm_max = 256;
-float f0 = 0.25;
-float pi = 3.141592654;
 const int n_leds = 4;
-float x[n_leds];
 void loop() {
   bool spdif_locked = (SPDIF_SRPC & SPDIF_SRPC_LOCK) == SPDIF_SRPC_LOCK;
   // get the audio data from the FIFO buffers
   if (spdif_locked) { // is SPDIF connected?
-    spdif_fifo_current = *spdif_fifo; // store the current fifo value
+    spdif_fifo_current = get_fifo(); // store the current fifo value
     if (spdif_fifo_current != spdif_fifo_prior) { // update the trigger status if there has been a change
       out_bits = 0;
       // move the spdif bits to the right place for setting the pins according to the pinout
       for (unsigned int i = 0; i < n_pins; i++) {
         if (pinout[i] != 255) {
+          // mask the bit at pinout[i]
+          // move that bit to 0
+          // move the bit at 0 to i
+          // union with out_bits
           out_bits |= ((spdif_fifo_current) & (1 << pinout[i]) >> pinout[i]) << i;
         } else {
           ; // do nothing because it starts out 0
         }
       }
-      out_bits |= (*spdif_fifo & 0b1111) << (n_pins); // LED indicators show first four bits
+
+      // The LED indicators are taken from the four bits in the shift register following the initial 25
+      out_bits |= (spdif_fifo_current & 0b1111) << (n_pins); // LED indicators show first four bits
 
       SPI.beginTransaction(SPISettings(100000000, MSBFIRST, SPI_MODE0));
       digitalWriteFast(LATCH_PIN, LOW);
