@@ -133,7 +133,7 @@ void loop() {
           // move that bit to 0
           // move the bit at 0 to i
           // union with out_bits
-          out_bits |= ((spdif_fifo_current) & (1 << pinout[i]) >> pinout[i]) << i;
+          out_bits |= (((spdif_fifo_current) & (1 << pinout[i])) >> pinout[i]) << i;
         } else {
           ; // do nothing because it starts out 0
         }
