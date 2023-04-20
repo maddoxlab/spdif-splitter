@@ -106,7 +106,7 @@ void setup() {
 
 byte channel = EEPROM.read(ADDR_CHANNEL);
 uint32_t get_fifo() {
-  uint32_t fifo_read, fifo_ignore;
+  uint32_t fifo_read, fifo_ignore;  // these could be static, but don't change until testing can be done
   if (channel) {
     fifo_ignore = SPDIF_SRL;
     fifo_read = SPDIF_SRR;
@@ -185,7 +185,7 @@ void config() {
   Serial.println("  [1] BrainProducts Actichamp DB25->DB9");
   valid_choice = false;
   while (!valid_choice) {
-    Serial.print("Choose a pinout... ");
+    Serial.println("Choose a pinout... ");
     while (!Serial.available());
     choice = Serial.read();
     switch (choice) {
@@ -201,6 +201,7 @@ void config() {
         Serial.println("\n  Invalid choice.");
     }
   }
+  Serial.read(); // clear the extra newline character
   for (unsigned int i = 0; i < n_pins; i++) { // read the pinout into RAM and setup the ground mask
     EEPROM.write(ADDR_PINOUT_0 + i, pinout_choice[i]);
   }
@@ -211,7 +212,7 @@ void config() {
   Serial.println("  [1] Right");
   valid_choice = false;
   while (!valid_choice) {
-    Serial.print("Choose a channel... ");
+    Serial.println("Choose a channel... ");
     while (!Serial.available());
     choice = Serial.read();
     switch (choice) {
@@ -224,6 +225,7 @@ void config() {
         Serial.println("\n  Invalid choice.");
     }
   }
+  Serial.read(); // clear the extra newline character
 
   for (unsigned int i = 0; i < 10; i++) { // Flash the lights to know that config was successful
     delay(100);
